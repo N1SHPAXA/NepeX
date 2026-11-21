@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NepeX</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="side-top">
+            <div class="brand">
+    <span class="logo-n">N</span><span>epe</span><span class="logo-x">X</span>
+</div>
+            <button class="icon-btn close-btn" onclick="toggleSidebar()">✕</button>
+        </div>
+
+        <button class="side-button active" onclick="newChat()">
+            ＋ New chat
+        </button>
+
+        <button class="side-button" onclick="showFeature('Search chats')">
+            ⌕ Search chats
+        </button>
+
+        <div class="menu-label">DISCOVER</div>
+
+        <button class="side-button" onclick="showFeature('Images')">
+            ▧ Images
+        </button>
+
+        <button class="side-button" onclick="showFeature('Explore AI')">
+            ◈ Explore AI
+        </button>
+
+        <button class="side-button" onclick="showFeature('Library')">
+            ▤ Library
+        </button>
+
+        <div class="menu-label">YOUR SPACE</div>
+
+        <div class="recent-label">Recent chats</div>
+        <div id="history">
+            <div class="history-item">✦ Welcome to Mini AI</div>
+        </div>
+
+        <div class="side-bottom">
+            <button class="side-button" onclick="showFeature('Settings')">
+                ⚙ Settings
+            </button>
+
+            <button class="profile" onclick="showFeature('My Account')">
+                <div class="avatar">Y</div>
+                <div>
+                    <strong>My Account</strong>
+                    <small>Free Plan</small>
+                </div>
+                <span class="profile-more">···</span>
+            </button>
+        </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <header class="topbar">
+            <div class="top-left">
+                <button class="icon-btn" onclick="toggleSidebar()">☰</button>
+                <span class="mobile-brand">Mini AI</span>
+                <button class="model-btn" onclick="showFeature('Model selection')">
+                    Mini AI <span>⌄</span>
+                </button>
+            </div>
+
+            <button class="share-btn" onclick="showFeature('Share')">
+                ↗ Share
+            </button>
+        </header>
+
+        <!-- CHAT AREA -->
+        <section class="chat-area" id="chatArea">
+
+            <div class="welcome" id="welcome">
+
+                <div class="welcome-icon">✦</div>
+
+                <h1>What can I help with?</h1>
+
+                <p>Your personal AI assistant.</p>
+
+                <div class="suggestions">
+
+                    <button onclick="useSuggestion('What is HTML?')">
+                        <span>⌨</span>
+                        Learn programming
+                    </button>
+
+                    <button onclick="useSuggestion('Explain CSS')">
+                        <span>✧</span>
+                        Explore technology
+                    </button>
+
+                    <button onclick="showFeature('Image generation')">
+                        <span>▧</span>
+                        Create an image
+                    </button>
+
+                    <button onclick="showFeature('Document analysis')">
+                        <span>▤</span>
+                        Analyze documents
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div id="chatbox" class="chatbox"></div>
+
+        </section>
+
+        <!-- INPUT AREA -->
+        <footer class="input-section">
+
+            <div class="input-box">
+
+                <textarea
+                    id="userInput"
+                    placeholder="Message Mini AI..."
+                    rows="1"
+                ></textarea>
+
+                <div class="input-actions">
+
+                    <div class="left-actions">
+                        <button class="input-btn"
+                            onclick="showFeature('File attachments')">
+                            ＋
+                        </button>
+
+                        <button class="tool-btn"
+                            onclick="showFeature('Tools')">
+                            ◈ Tools
+                        </button>
+                    </div>
+
+                    <div class="right-actions">
+
+                        <button class="input-btn"
+                            onclick="showFeature('Voice mode')">
+                            ♬
+                        </button>
+
+                        <button class="send-btn" onclick="sendMessage()">
+                            ↑
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <p class="disclaimer">
+                Mini AI can make mistakes. Check important information.
+            </p>
+
+        </footer>
+
+    </main>
+
+</div>
+
+<!-- NOTIFICATION -->
+<div id="toast" class="toast"></div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
