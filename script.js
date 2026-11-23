@@ -4,6 +4,44 @@ const chatbox = document.getElementById("chatbox");
 const welcome = document.getElementById("welcome");
 const toast = document.getElementById("toast");
 const history = document.getElementById("history");
+// NEPEX THINKING INDICATOR
+const thinkingIndicator = document.createElement("div");
+
+thinkingIndicator.innerHTML = `
+    <span class="nepex-loader"></span>
+    <span>Just A Sec.</span>
+`;
+
+thinkingIndicator.style.cssText = `
+    display: none;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    color: #e5d7a0;
+    font-size: 14px;
+`;
+
+const loaderStyle = document.createElement("style");
+
+loaderStyle.textContent = `
+.nepex-loader {
+    width: 17px;
+    height: 17px;
+    border: 2px solid rgba(255,255,255,0.15);
+    border-top-color: white;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255,220,130,0.5);
+    animation: nepexSpin 0.8s linear infinite;
+    display: inline-block;
+}
+
+@keyframes nepexSpin {
+    to { transform: rotate(360deg); }
+}
+`;
+
+document.head.appendChild(loaderStyle);
+chatbox.appendChild(thinkingIndicator);
 
 let chats = JSON.parse(localStorage.getItem("miniAIChats")) || [];
 let activeChatId = null;
@@ -54,24 +92,77 @@ function renderHistory() {
 
     chats.slice().reverse().forEach(chat => {
 
+        const row = document.createElement("div");
+
+        row.style.cssText = `
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 7px;
+        `;
+
         const item = document.createElement("button");
 
         item.className = "history-item";
         item.textContent = "✦ " + chat.title;
 
-        item.style.width = "100%";
-        item.style.textAlign = "left";
-        item.style.background = chat.id === activeChatId
-            ? "#303030"
-            : "transparent";
-        item.style.border = "none";
-        item.style.cursor = "pointer";
+        item.style.cssText = `
+            flex: 1;
+            min-width: 0;
+            text-align: left;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+            background: ${chat.id === activeChatId ? "#303030" : "transparent"};
+        `;
 
         item.onclick = () => openChat(chat.id);
 
-        history.appendChild(item);
+        const deleteButton = document.createElement("button");
+
+        deleteButton.textContent = "×";
+        deleteButton.title = "Delete chat";
+
+        deleteButton.style.cssText = `
+            border: none;
+            background: transparent;
+            color: #aaa;
+            font-size: 21px;
+            cursor: pointer;
+            padding: 5px 10px;
+        `;
+
+        deleteButton.onclick = (event) => {
+            event.stopPropagation();
+            deleteChat(chat.id);
+        };
+
+        row.appendChild(item);
+        row.appendChild(deleteButton);
+
+        history.appendChild(row);
     });
 }
+
+// DELETE INDIVIDUAL CHAT
+function deleteChat(id) {
+
+    chats = chats.filter(chat => chat.id !== id);
+
+    if (activeChatId === id) {
+        activeChatId = null;
+        chatbox.innerHTML = "";
+        chatbox.appendChild(thinkingIndicator);
+        thinkingIndicator.style.display = "none";
+        welcome.style.display = "block";
+    }
+
+    saveChats();
+    renderHistory();
+}
+
 
 // OPEN OLD CHAT
 function openChat(id) {
@@ -115,7 +206,9 @@ function newChat() {
 }
 
 // CHATBOT KNOWLEDGE
-function getAnswer(question) {
+function getAnswer(question)
+
+{
 
     if (question.includes("hello") || question.includes("hi")) {
         return "Hello! How can I help you?";
@@ -434,11 +527,11 @@ else if (question.includes("do you know everything")) {
 else if (question.includes("tell me a joke")) {
     return  "Why did the programmer quit his job? Because he didn't get arrays!";
 }
-else if (userMessage.includes("why is the sky blue")) {
+else if (question.includes("why is the sky blue")) {
     return "The sky appears blue because air molecules scatter shorter blue wavelengths of sunlight more than longer wavelengths.";
 }
 
-else if (userMessage.includes("sunset") || userMessage.includes("red sky")) {
+else if (question.includes("sunset") || question.includes("red sky")) {
     return "During sunset, sunlight travels through more atmosphere. Much of the blue light gets scattered away, leaving more red and orange light to reach our eyes.";
 }
     else if (question.includes("css")) {
@@ -456,6 +549,7 @@ else if (userMessage.includes("sunset") || userMessage.includes("red sky")) {
     else {
         return "I don't know that yet. Teach me something new!";
     }
+    question = question.toLowerCase();
 }
 
 // SEND MESSAGE
@@ -465,7 +559,6 @@ function sendMessage() {
 
     if (question === "") return;
 
-    // CREATE A CHAT IF NECESSARY
     if (!activeChatId) {
 
         activeChatId = Date.now().toString();
@@ -478,6 +571,46 @@ function sendMessage() {
 
         chats.push(newChatData);
     }
+
+    let chat = getActiveChat();
+
+    chat.messages.push({
+        text: question,
+        type: "user-message"
+    });
+
+    welcome.style.display = "none";
+
+    addMessage(question, "user-message");
+
+    input.value = "";
+
+    // SHOW THINKING INDICATOR
+    thinkingIndicator.style.display = "flex";
+    chatbox.appendChild(thinkingIndicator);
+
+    const answer = getAnswer(question);
+
+    setTimeout(() => {
+
+        // HIDE THINKING INDICATOR
+        thinkingIndicator.style.display = "none";
+
+        chat.messages.push({
+            text: answer,
+            type: "ai-message"
+        });
+
+        addMessage(answer, "ai-message");
+
+        saveChats();
+        renderHistory();
+
+    }, 1000);
+
+    saveChats();
+    renderHistory();
+}
 
     let chat = getActiveChat();
 
@@ -513,7 +646,6 @@ function sendMessage() {
 
     saveChats();
     renderHistory();
-}
 
 // SUGGESTIONS
 function useSuggestion(question) {
